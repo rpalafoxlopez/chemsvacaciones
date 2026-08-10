@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FortunCheems - Modo Vacaciones & Fortuna</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#131313",
+                        "surface-card": "#1c1b1b",
+                        "primary": "#d4af37",
+                        "primary-hover": "#f1e5c2",
+                        "on-surface": "#e4e2e2",
+                        "on-surface-muted": "#a8a5a5",
+                        "outline": "#353434",
+                        "error-red": "#ff4d4d"
+                    },
+                    fontFamily: {
+                        'serif': ['"Libre Caslon Text"', 'serif'],
+                        'sans': ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+         .gold-glow {
+            box-shadow: 0 10px 40px -10px rgba(1, 24, 68, 0.15);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg,  rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .shake-hover:hover {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(2px, 0, 0) rotate(1deg); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(3px, 0, 0) rotate(2deg); }
+        }
+        #camera-flash {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .flash-active {
+            animation: flashBang 0.8s ease-out forwards;
+        }
+        @keyframes flashBang {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .fortune-appear {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-4 md:p-8 font-sans selection:bg-primary selection:text-black">
+
+    <!-- Flash Overlay for Troll Effect -->
+    <div id="camera-flash"></div>
+
+    <main class="w-full max-w-[560px] mx-auto relative">
+        <!-- Ambient Glow Effects -->
+        <div class="absolute -top-12 -left-12 w-56 h-56 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -right-12 w-56 h-56 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Main Card Container -->
+        <article class="bg-surface-card rounded-2xl border border-outline gold-glow overflow-hidden backdrop-blur-sm transition-all duration-300 p-6 sm:p-8 flex flex-col items-center text-center gap-6 relative">
+            
+            <!-- INITIAL STATE: Cookie & Choice Screen -->
+            <div id="initial-view" class="w-full flex flex-col items-center gap-6">
+                <!-- Header Text -->
+                <div class="space-y-2">
+                    <h1 class="font-serif font-bold text-2xl sm:text-3xl text-gradient leading-tight">
+                        ¿QUÉ TE DEPARA EL UNIVERSO?
+                    </h1>
+                    <p class="text-sm text-on-surface-muted max-w-xs mx-auto">
+                        Elige tu actitud de hoy antes de abrir la galleta de la fortuna.
+                    </p>
+                </div>
+
+                <!-- Cookie Graphic Container -->
+                <div id="cookie-container" class="relative w-48 h-48 flex items-center justify-center cursor-pointer shake-hover group my-2" onclick="handleGoodBoy()">
+                    <div class="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all"></div>
+                    <div class="text-8xl select-none filter drop-shadow-[0_10px_15px_rgba(1, 24, 68, 0.3)] transition-transform group-active:scale-95">
+                        🥠
+                    </div>
+                </div>
+
+                <!-- Interaction Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full">
+                    <!-- Good Boy Button -->
+                    <button onclick="handleGoodBoy()" class="flex-1 bg-primary text-black font-semibold py-3.5 px-5 rounded-xl shadow-lg hover:bg-primary-hover transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95">
+                        <span class="material-symbols-outlined text-black group-hover:rotate-12 transition-transform">sentiment_very_satisfied</span>
+                        <span>¿Soy para ti agradable?</span>
+                    </button>
+                    
+                    <!-- Naughty Boy / Troll Button -->
+                    <button onclick="handleNaughtyBoy()" class="flex-1 bg-error-red hover:bg-surface border border-outline hover:border-error-red hover:text-white text-on-surface text-error-red font-semibold py-3.5 px-5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95">
+                        <span class="material-symbols-outlined group-hover:-rotate-12 transition-transform">mood_bad</span>
+                        <span>¿Soy para ti desagradable?</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PATH 1: REVEAL FORTUNE (Soy Agradable) -->
+            <div id="fortune-view" class="hidden w-full flex-col items-center gap-6 fortune-appear">
+                <div class="text-6xl animate-bounce">✨🥠✨</div>
+                
+                <h2 class="font-serif font-bold text-2xl text-primary">¡Tu Galleta Se Ha Abierto!</h2>
+                
+                <div class="p-6 rounded-xl bg-surface/80 border border-primary/40 text-on-surface relative w-full space-y-3">
+                    <span class="material-symbols-outlined text-primary text-3xl">format_quote</span>
+                    <p id="fortune-text" class="font-serif italic text-lg sm:text-xl text-primary-hover">
+                        "Cargando tu fortumna..."
+                    </p>
+                    <p class="text-xs text-on-surface-muted uppercase tracking-wider font-semibold pt-2">
+                        — Sambiduria de Cheems
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full">
+                    <a href="https://www.tiktok.com/search?q=el%20whatsapp%20de%20la%20empresa" target="_blank" rel="noopener noreferrer" class="flex-1 bg-primary text-black font-semibold py-3 px-4 rounded-xl hover:bg-primary-hover transition-all flex items-center justify-center gap-2 text-sm">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        <span>Ver TikToks Alegres</span>
+                    </a>
+                    <button onclick="resetApp()" class="bg-surface border border-outline hover:border-primary text-on-surface py-3 px-4 rounded-xl transition-all text-sm">
+                        Probar otra vez
+                    </button>
+                </div>
+            </div>
+
+            <!-- PATH 2: TROLL REVEAL (Soy Desagradable) -->
+            <div id="troll-view" class="hidden w-full flex-col items-center gap-5 fortune-appear">
+                <!-- Cheems Reaction Header -->
+                <div class="w-full bg-error-red/10 border border-error-red/40 rounded-xl p-4 text-center space-y-1">
+                    <span class="material-symbols-outlined text-error-red text-4xl">photo_camera</span>
+                    <h2 class="font-serif font-bold text-xl text-error-red uppercase tracking-wide">
+                        ¡📸 FOTO CAPTURADA!
+                    </h2>
+                    <p class="text-lg font-bold text-on-surface">
+                        "SABÍA QUE NO TE CAÍA BIEN"
+                    </p>
+                    <p class="text-xs text-on-surface-muted italic">
+                       Mucha amsiedad y mala actitud. ¡Quierete!
+                    </p>
+                </div>
+
+                <!-- Meme / Troll Video Embed -->
+                <div class="w-full rounded-xl overflow-hidden border border-outline bg-black aspect-video relative">
+                    <iframe  
+                        id="troll-video" 
+                        class="w-full h-full" 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ihET24e_lncgjKgR" 
+                        title="Troll Video" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>                    
+                </div>
+
+                <!-- Reset Action -->
+                <button onclick="resetApp()" class="w-full bg-surface border border-outline hover:border-primary text-primary font-semibold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm">
+                    <span class="material-symbols-outlined">refresh</span>
+                    <span>Arrepentirme y pedir perdón a Cheems</span>
+                </button>
+            </div>
+
+            <!-- Card Footer Note -->
+            <p class="text-xs text-on-surface-muted pt-2 border-t border-outline/30 w-full">
+                Si me necesitas durante mis vacaciones... <span class="text-on-surface font-semibold">desnecesítenme.</span>
+            </p>
+
+        </article>
+    </main>
+
+    <!-- Logic Script -->
+     <script src="https://www.youtube.com/iframe_api"></script>
+   <script>
+    const fortunes = [
+    {
+        quote: "“El éxito no es la clave de la felicidad; la felicidad es la clave del éxito. Si amas lo que haces, triunfarás.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“La paciencia es un árbol de raíz amarga, pero de frutos muy dulces. Gran prosperidad llegará a tu vida pronto.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“Quien mira hacia afuera, sueña; quien mira hacia adentro, despierta. Confía en tu intuición hoy.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“Un viaje de mil millas comienza con un solo paso. Hoy es el día perfecto para empezar de nuevo.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“La suerte favorece a la mente preparada. Mantén la calma ante los cambios y verás nuevas oportunidades.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“Si la oportunidad no llama a tu puerta, construye una puerta. El universo está a tu favor.”",
+        number: "55 52 03 03 77"
+    },
+    {
+        quote: "“Si todo lo demás falla y el código/trabajo se complica... ustedes pueden, échenle ganas.”",
+        number: "55 52 03 03 77"
+    }
+];
+
+    let player;
+
+    // Inicializar el reproductor mediante la API oficial
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('troll-video', {
+            videoId: 'dQw4w9WgXcQ',
+            playerVars: {
+                'autoplay': 0,
+                'playsinline': 1,
+                'rel': 0,
+                'enablejsapi': 1,
+                'origin': window.location.origin || '*'
+            }
+        });
+    }
+
+    function handleGoodBoy() {
+        const fortuneText = fortunes[Math.floor(Math.random() * fortunes.length)];
+        document.getElementById('fortune-text').innerHTML = fortuneText.quote + "<small style='display: block; margin-top: 0.5rem; font-size: 0.09rem; color: #a8a5a5;'> Tu número de la suerte es:" + fortuneText.number + "</small>";
+
+        document.getElementById('initial-view').classList.add('hidden');
+        const fortuneView = document.getElementById('fortune-view');
+        fortuneView.classList.remove('hidden');
+        fortuneView.classList.add('flex');
+
+        setTimeout(() => {
+            window.open('https://www.tiktok.com/search?q=memes%20de%20cheems%20graciosos', '_blank');
+        }, 1200);
+    }
+
+    function handleNaughtyBoy() {
+        // Efecto Flash
+        const flash = document.getElementById('camera-flash');
+        flash.classList.add('flash-active');
+        
+        setTimeout(() => {
+            flash.classList.remove('flash-active');
+        }, 800);
+
+        // Cambiar vistas
+        document.getElementById('initial-view').classList.add('hidden');
+        const trollView = document.getElementById('troll-view');
+        trollView.classList.remove('hidden');
+        trollView.classList.add('flex');
+
+        // Reproducir video con la API de forma segura
+        if (player && typeof player.seekTo === 'function') {
+            player.seekTo(5);
+            player.playVideo();
+        }
+    }
+
+    function resetApp() {
+        // Pausar/Detener video
+        if (player && typeof player.stopVideo === 'function') {
+            player.stopVideo();
+        }
+
+        // Resetear vistas
+        document.getElementById('fortune-view').classList.add('hidden');
+        document.getElementById('fortune-view').classList.remove('flex');
+        document.getElementById('troll-view').classList.add('hidden');
+        document.getElementById('troll-view').classList.remove('flex');
+
+        document.getElementById('initial-view').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
