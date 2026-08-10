@@ -125,10 +125,12 @@
                     </p>
 
                     <!-- Interactive Cookie Button -->
-                    <button id="cookie-btn" onclick="getFortune()" class="w-full sm:w-auto  border border-primary/80 hover:text-primary hover:bg-transparent bg-primary text-black font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95 pulse">
+                    <div class="pulse">
+                    <button id="cookie-btn" onclick="getFortune()" class="w-full sm:w-auto  border border-primary/80 hover:text-primary hover:bg-transparent bg-primary text-black font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95">
                         <span>🥠 ¿Quieres una galleta de la suerte?</span>
                     </button>
-
+                    </div>
+                    
                     <!-- Fortune Display Box -->
                     <div id="fortune-box" class="hidden w-full mt-2 p-4 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm font-serif italic transition-all duration-500">
                         <!-- Content inserted via JS -->
