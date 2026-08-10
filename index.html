@@ -36,6 +36,24 @@
         }
     </script>
     <style>
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .pulse {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
         .gold-glow {
             box-shadow: 0 10px 40px -10px rgba(1, 24, 68, 0.15);
         }
